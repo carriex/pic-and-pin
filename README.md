@@ -1,7 +1,7 @@
 # pic-and-pin
 
 ## Install npm 
-![Download](https://www.npmjs.com/get-npm)
+[Download](https://www.npmjs.com/get-npm)
 
 ## Install expo and dependencies
 ```bash 
