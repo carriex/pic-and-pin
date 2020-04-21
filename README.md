@@ -11,6 +11,7 @@ npm install -g expo-cli
 ```bash
 npm install -S firebase
 npm install --save uuid
+npm install --save google-map-react
 expo install expo-image-picker
 expo install expo-constants
 expo install expo-permissions
