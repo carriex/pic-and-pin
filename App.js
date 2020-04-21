@@ -287,8 +287,8 @@ async function uploadImageAsync(uri) {
   const ref = firebase
     .storage()
     .ref()
-    .child(uuidv4());
-  //.child(Math.floor(Math.random() * 100000));
+  //.child(uuidv4());
+  .child(Math.floor(Math.random() * 100000).toString());
 
   // upload to firebase 
   const snapshot = await ref.put(blob);
