@@ -19,6 +19,7 @@ import { Container, Text, Button, Header, Left, Body, Right, Icon, Title, Conten
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import SimpleMap from './simpleMap'
+// import Axios from 'axios';
 // import { Map, GoogleApiWrapper } from 'google-maps-react';
 // import Environment from './config/environment';
 // import firebase from './config/firebase';
@@ -50,9 +51,9 @@ export default class App extends React.Component {
   state = {
     image: null,
     uploading: false,
-    googleResponse: null,
-    googleResult: null
+    googleResponse: null
   };
+
 
   async componentDidMount() {
     document.title = "Pic and Pin"
@@ -68,7 +69,6 @@ export default class App extends React.Component {
 
   render() {
     let { image } = this.state;
-
     return (
       <View style={styles.container}>
         <ScrollView
@@ -78,12 +78,9 @@ export default class App extends React.Component {
           <Container>
             <Header>
               <Left>
-                <Button transparent>
-                  <Icon name='arrow-back' />
-                </Button>
               </Left>
               <Body>
-                <Title>Pic and Pin</Title>
+                <Title style={{ textAlign:"center" }}>Pic and Pin</Title>
               </Body>
               <Right>
               <Button transparent>
@@ -151,6 +148,27 @@ export default class App extends React.Component {
       return;
     }
 
+  //   if (googleResponse){
+  //   let lag =  this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng["latitude"];
+  //   let lon =  this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng["longitude"];
+  //   console.log(lag, lon);
+  //   Axios.get('https://api-sandbox.rezserver.com/api/hotel/getExpress.Results',
+  //   { params: {refid: '1346',
+  //   api_key: '21e1fb57679db2489ba1c9f8c2c79e8c',
+  //   format: 'json2',
+  //   latitude: lag,
+  //   longitude: lon,
+  //   check_in: '2020-05-01',
+  //   check_out: '2020-05-03'
+  // }}).then(function(response){
+  //     console.log(response);
+  //   }).catch(function (error) {
+  //     // handle error
+  //     console.log(error);
+  //   });
+  // }
+
+
     return (
       <View
         style={{
@@ -181,7 +199,7 @@ export default class App extends React.Component {
         />
         
         <Button rounded info onPress={this.submitToGoogle} style={{ textAlign:"center" }}>
-          <Text>Locate </Text>
+          <Text>Locate!</Text>
         </Button>
 
 
@@ -190,6 +208,12 @@ export default class App extends React.Component {
                                           lng: this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['longitude']}}
                       description={this.state.googleResponse.responses[0].landmarkAnnotations[0].description}
 />)}
+
+
+{googleResponse && 
+          (<Button rounded info  style={{ textAlign:"center" }}>
+          <Text>Share to Instagram</Text>
+        </Button>)}
 
         
       </View>
@@ -282,8 +306,7 @@ export default class App extends React.Component {
       let responseJson = await response.json();
       this.setState({
         googleResponse: responseJson,
-        uploading: false,
-        googleResult: responseJson.responses[0].landmarkAnnotations
+        uploading: false
       });
     } catch (error) {
       console.log(error);
