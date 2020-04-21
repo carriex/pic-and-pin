@@ -16,10 +16,10 @@ import * as Permissions from 'expo-permissions';
 import { v4 as uuidv4 } from 'uuid';
 import * as firebase from 'firebase';
 import { Container, Text, Button, Header, Left, Body, Right, Icon, Title, Content } from 'native-base';
-
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-
+import SimpleMap from './simpleMap'
+// import { Map, GoogleApiWrapper } from 'google-maps-react';
 // import Environment from './config/environment';
 // import firebase from './config/firebase';
 
@@ -50,7 +50,8 @@ export default class App extends React.Component {
   state = {
     image: null,
     uploading: false,
-    googleResponse: null
+    googleResponse: null,
+    googleResult: null
   };
 
   async componentDidMount() {
@@ -184,12 +185,13 @@ export default class App extends React.Component {
         </Button>
 
 
-        {googleResponse && (
-          <Text style={{ textAlign:"center" }}>
-            {this.state.googleResponse.responses[0].landmarkAnnotations[0].description} {"\n"}
-            lag: {this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['latitude']} {"\n"}
-            long: {this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['longitude']}
-          </Text>)}
+        {googleResponse && 
+          (<SimpleMap center={{ lat: this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['latitude'],
+                                          lng: this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['longitude']}}
+                      description={this.state.googleResponse.responses[0].landmarkAnnotations[0].description}
+/>)}
+
+        
       </View>
     );
   };
@@ -278,10 +280,10 @@ export default class App extends React.Component {
         }
       );
       let responseJson = await response.json();
-      console.log(responseJson);
       this.setState({
         googleResponse: responseJson,
-        uploading: false
+        uploading: false,
+        googleResult: responseJson.responses[0].landmarkAnnotations
       });
     } catch (error) {
       console.log(error);
@@ -352,6 +354,6 @@ const styles = StyleSheet.create({
   helpContainer: {
     marginTop: 50,
     alignItems: 'center',
-    color: '#007aff'
+    //color: '#007aff'
   }
 });
