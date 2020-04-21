@@ -1,23 +1,25 @@
 //https://blog.jscrambler.com/create-a-react-native-image-recognition-app-with-google-vision-api/ 
-
+import 'react-native-get-random-values';
 import React from 'react';
 import {
   ActivityIndicator,
-  Button,
   Clipboard,
   FlatList,
   Image,
   Share,
   StyleSheet,
-  Text,
   ScrollView,
   View
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import * as firebase from 'firebase';
+import { Container, Text, Button, Header, Left, Body, Right, Icon, Title, Content } from 'native-base';
+
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+
 // import Environment from './config/environment';
 // import firebase from './config/firebase';
 
@@ -55,6 +57,12 @@ export default class App extends React.Component {
     document.title = "Pic and Pin"
     await Permissions.askAsync(Permissions.CAMERA_ROLL);
     await Permissions.askAsync(Permissions.CAMERA);
+    
+    await Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+      ...Ionicons.font,
+    });
   }
 
   render() {
@@ -66,16 +74,30 @@ export default class App extends React.Component {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
         >
-          <View style={styles.getStartedContainer}>
-            <Text style={styles.getStartedText}>Pic and Pin</Text>
-          </View>
+          <Container>
+            <Header>
+              <Left>
+                <Button transparent>
+                  <Icon name='arrow-back' />
+                </Button>
+              </Left>
+              <Body>
+                <Title>Pic and Pin</Title>
+              </Body>
+              <Right>
+              <Button transparent>
+                <Icon name='menu' />
+              </Button>
+              </Right>
+            </Header>
+
+          </Container>
 
           <View style={styles.helpContainer}>
-            <Button
-              onPress={this._pickImage}
-              title="Pick an image from camera roll"
-            />
-
+            <Button rounded info onPress={this._pickImage}>
+              <Text> Pick an image from camera roll </Text>
+            </Button>
+   
             {/* <Button onPress={this._takePhoto} title="Take a photo" /> */}
             {this.state.googleResponse && (
               <FlatList
@@ -156,11 +178,10 @@ export default class App extends React.Component {
           onLongPress={this._share}
           style={{ paddingVertical: 10, paddingHorizontal: 10 }}
         />
-        <Button
-          style={{ marginBottom: 10 }}
-          onPress={() => this.submitToGoogle()}
-          title="Locate!"
-        />
+        
+        <Button rounded info onPress={this.submitToGoogle} style={{ textAlign:"center" }}>
+          <Text>Locate </Text>
+        </Button>
 
 
         {googleResponse && (
@@ -329,7 +350,7 @@ const styles = StyleSheet.create({
   },
 
   helpContainer: {
-    marginTop: 15,
+    marginTop: 50,
     alignItems: 'center',
     color: '#007aff'
   }
