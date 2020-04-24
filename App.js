@@ -42,7 +42,8 @@ const Environment = {
   GOOGLE_CLOUD_VISION_API_KEY: 'AIzaSyA1Ek0Sj0m3llWAGQCI6bAmOL4x8FO64e4',
   PRICELINE_SERVER: "https://api-sandbox.rezserver.com/api/hotel/getExpress.Results",
   PRICELINE_REFID: '1346',
-  PRICELINE_APIKEY: '21e1fb57679db2489ba1c9f8c2c79e8c'
+  PRICELINE_APIKEY: '21e1fb57679db2489ba1c9f8c2c79e8c',
+  PRICELINE_HOTEL_PREFIX: "https://www.priceline.com/relax/at/"
 
 };
 
@@ -159,12 +160,13 @@ export default class App extends React.Component {
 
   _maybeRenderHotel = () => {
     return(
-      <FlatList
-      data={this.state.hotels}
-      renderItem={({ item }) => 
-      <Text> <Icon name='home'/>{item.name}</Text>}
-      keyExtractor={item => item.id}
-    />
+    //   <FlatList
+    //   data={this.state.hotels}
+    //   renderItem={({ item }) => 
+    //   <Text> <Icon name='home'/>{item.name}</Text>}
+    //   keyExtractor={item => item.id}
+    // />
+    <Hotel hotels={this.state.hotels}/>
     )
   }
 
@@ -368,6 +370,17 @@ export default class App extends React.Component {
 /****************************
 *     helper functions      *
 *****************************/
+
+function Hotel(props){
+  const content = props.hotels.map((hotel) =>
+  <Text key={hotel.id} onPress={() => Linking.openURL(Environment['PRICELINE_HOTEL_PREFIX'] + hotel.id_t.toString())}>
+    {hotel.name}
+  </Text>)
+  return(
+    <View>{content}</View>
+  );
+}
+
 
 async function uploadImageAsync(uri) {
   const blob = await new Promise((resolve, reject) => {
