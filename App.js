@@ -224,20 +224,12 @@ export default class App extends React.Component {
           </Text>)} 
 
         {googleResponse && 
-          (<Button rounded info onPress={this._saveToCameraRollAsync} style={{ textAlign:"center" }}>
-          <Text>Take a snapshot</Text>
-          </Button>
-        )}
-
-        {googleResponse && 
           (<Button rounded info onPress={this._shareToIns} style={{ textAlign:"center" }}>
-          <Text>Share snapshot to Ins</Text>
+          <Text>Share to Instagram</Text>
           </Button>
         )}
 
         {hotels && this._maybeRenderHotel()}
-
-
 
       </View>
     );
@@ -249,7 +241,23 @@ export default class App extends React.Component {
     <Text>response: {JSON.stringify(item)}</Text>;
   };
 
-  _saveToCameraRollAsync = async () => {
+  // saveToCameraRollAsync = async () => {
+  //   try {
+  //     const testResult = await captureRef(this._container, {
+  //       format: "jpg",
+  //       quality: 0.8
+  //     });
+  //     console.log("testResult", testResult);
+  //     //const saveresult = CameraRoll.saveToCameraRoll(testResult, 'photo');
+  //     const saveResult = await MediaLibrary.createAssetAsync(testResult); // screenshot saved in album
+  //     console.log("saveResult", saveResult); // object uri?
+  //     this.setState({screenshot: saveResult});
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }; 
+
+  _shareToIns = async () => {
     try {
       const testResult = await captureRef(this._container, {
         format: "jpg",
@@ -263,11 +271,6 @@ export default class App extends React.Component {
     } catch (e) {
       console.log(e);
     }
-  }; 
-
-  _shareToIns = async () => {
-    // let image = await ImagePicker.launchImageLibraryAsync();
-    // let { origURL } = image;
     let encodedURL = encodeURIComponent(this.state.screenshot);
     let instagramURL = `instagram://library?AssetPath=${encodedURL}`;
     Linking.openURL(instagramURL);
