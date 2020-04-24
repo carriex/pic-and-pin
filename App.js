@@ -11,15 +11,24 @@ import {
   ScrollView,
   View,
   Linking,
-  Dimensions
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import { v4 as uuidv4 } from 'uuid';
 import * as firebase from 'firebase';
-import { Container, Text, Button, Header, Left, Body, Right, Icon, Title } from 'native-base';
+import { Container, 
+  Text, 
+  Button, 
+  Header, 
+  Left, 
+  Body, 
+  Right, 
+  Icon, 
+  Title,
+  ListItem,
+  List } from 'native-base';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
+//https://codeburst.io/react-native-google-map-with-react-native-maps-572e3d3eee14
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
 import { captureRef } from 'react-native-view-shot';
@@ -64,7 +73,7 @@ export default class App extends React.Component {
     googleResponse: null,
     screenshot: null
   };
-  
+
 
 
   async componentDidMount() {
@@ -83,27 +92,27 @@ export default class App extends React.Component {
     let { image } = this.state;
     const scrollEnabled = true;
     return (
-      <View style={styles.container} 
+      <View style={styles.container}
         ref={view => {
           this._container = view;
         }}>
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
-          scrollEnabled = {scrollEnabled}
+          scrollEnabled={scrollEnabled}
         >
-            <Header>
-              <Left>
-              </Left>
-              <Body>
-                <Title style={{ textAlign: "center" }}>Pic and Pin</Title>
-              </Body>
-              <Right>
-                {/* <Button transparent>
+          <Header>
+            <Left>
+            </Left>
+            <Body>
+              <Title style={{ textAlign: "center" }}>Pic and Pin</Title>
+            </Body>
+            <Right>
+              {/* <Button transparent>
                   <Icon name='menu' />
                 </Button> */}
-              </Right>
-            </Header>
+            </Right>
+          </Header>
 
           <View style={styles.helpContainer}>
             <Button rounded info onPress={this._pickImage}>
@@ -156,18 +165,12 @@ export default class App extends React.Component {
   };
 
   _maybeRenderHotel = () => {
-    return(
-    //   <FlatList
-    //   data={this.state.hotels}
-    //   renderItem={({ item }) => 
-    //   <Text> <Icon name='home'/>{item.name}</Text>}
-    //   keyExtractor={item => item.id}
-    // />
-    <View>
-    <Hotel hotels={this.state.hotels}/>
-    <Container>
-    <Text>pic and pin 📍</Text></Container>
-    </View>
+    return (
+      <View>
+        <Hotel hotels={this.state.hotels} />
+        <Container>
+          <Text>pic and pin 📍</Text></Container>
+      </View>
     )
   }
 
@@ -176,7 +179,7 @@ export default class App extends React.Component {
     if (!image) {
       return;
     }
-  
+
 
     return (
       <View
@@ -207,27 +210,30 @@ export default class App extends React.Component {
         </Button>
 
 
-          {googleResponse && (
-            <MapView provider = { PROVIDER_GOOGLE }
-            style = { styles.mapContainer }
+        {googleResponse && (
+          <MapView provider={PROVIDER_GOOGLE}
+            style={styles.mapContainer}
             initialRegion={{
-              latitude:this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['latitude'],
+              latitude: this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['latitude'],
               longitude: this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['longitude'],
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
-            }}/>
-          )}
+            }}><MapView.Marker coordinate={{
+              latitude:this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['latitude'],
+              longitude:this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['longitude'],}
+            }/></MapView>
+        )}
 
-          {googleResponse &&
+        {googleResponse &&
           (<Text>
             {this.state.googleResponse.responses[0].landmarkAnnotations[0].description}
-          </Text>)} 
+          </Text>)}
 
         {googleResponse && 
           (<Button rounded info onPress={this._shareToIns} style={{ textAlign:"center" }}>
           <Text>Share to Instagram</Text>
           </Button>
-        )}
+          )}
 
         {hotels && this._maybeRenderHotel()}
 
@@ -267,7 +273,7 @@ export default class App extends React.Component {
       //const saveresult = CameraRoll.saveToCameraRoll(testResult, 'photo');
       const saveResult = await MediaLibrary.createAssetAsync(testResult); // screenshot saved in album
       console.log("saveResult", saveResult); // object uri?
-      this.setState({screenshot: saveResult});
+      this.setState({ screenshot: saveResult });
     } catch (e) {
       console.log(e);
     }
@@ -347,7 +353,7 @@ export default class App extends React.Component {
         }
       );
 
-    var responseJson = await response.json();
+      var responseJson = await response.json();
       this.setState({
         googleResponse: responseJson,
         uploading: false
@@ -356,15 +362,16 @@ export default class App extends React.Component {
       console.log(error);
     }
 
-    try{
-    // get hotel info with the lag and long
-    console.log('Fetching hotel info...')
-    var priceline_response = await getHotelInfoAsync(responseJson);
-;
-    this.setState({
-      hotels: priceline_response['getHotelExpress.Results']['results']['hotel_data']
+    try {
+      // get hotel info with the lag and long
+      console.log('Fetching hotel info...')
+      var priceline_response = await getHotelInfoAsync(responseJson);
+      ;
+      this.setState({
+        hotels: priceline_response['getHotelExpress.Results']['results']['hotel_data']
 
-    });}catch(error){
+      });
+    } catch (error) {
       console.log(error);
     }
 
@@ -376,13 +383,15 @@ export default class App extends React.Component {
 *     helper functions      *
 *****************************/
 
-function Hotel(props){
+
+function Hotel(props) {
   const content = props.hotels.map((hotel) =>
-  <Text key={hotel.id} onPress={() => Linking.openURL(Environment['PRICELINE_HOTEL_PREFIX'] + hotel.id_t.toString())}>
-    {hotel.name}
-  </Text>)
-  return(
-    <View>{content}</View>
+    <ListItem>
+    <Text key={hotel.id} onPress={() => Linking.openURL(Environment['PRICELINE_HOTEL_PREFIX'] + hotel.id_t.toString())}>
+      {hotel.name}
+    </Text></ListItem>)
+  return (
+    <List>{content}</List>
   );
 }
 
@@ -416,15 +425,15 @@ async function uploadImageAsync(uri) {
   return await snapshot.ref.getDownloadURL();
 }
 
-function convert_date(date){
+function convert_date(date) {
   var dd = String(date.getDate()).padStart(2, '0');
   var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
   var yyyy = date.getFullYear();
   date = yyyy + '-' + mm + '-' + dd;
-  return date 
+  return date
 }
 
- async function getHotelInfoAsync(response) {
+async function getHotelInfoAsync(response) {
   // send request to priceline and get response 
   const lag = response.responses[0].landmarkAnnotations[0].locations[0].latLng["latitude"];
   const lon = response.responses[0].landmarkAnnotations[0].locations[0].latLng["longitude"];
@@ -437,20 +446,21 @@ function convert_date(date){
   console.log(lag, lon);
 
   var server_url = new URL(Environment['PRICELINE_SERVER']),
-  url = new URL('getExpress.Results', server_url),
-  // to by pass cors error: https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors/43268098
-  proxyUrl = 'https://cors-anywhere.herokuapp.com/', 
-  params = {
-    refid: Environment['PRICELINE_REFID'],
-    api_key: Environment['PRICELINE_APIKEY'],
-    format: 'json2',
-    sort_by: 'gs',
-    limit: 10,
-    latitude: lag,
-    longitude: lon,
-    check_in: checkin,
-    check_out: checkout
-  };
+    url = new URL('getExpress.Results', server_url),
+    // to by pass cors error: https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors/43268098
+    // no need for native app
+    proxyUrl = 'https://cors-anywhere.herokuapp.com/',
+    params = {
+      refid: Environment['PRICELINE_REFID'],
+      api_key: Environment['PRICELINE_APIKEY'],
+      format: 'json2',
+      sort_by: 'gs',
+      limit: 10,
+      latitude: lag,
+      longitude: lon,
+      check_in: checkin,
+      check_out: checkout
+    };
 
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
@@ -484,7 +494,7 @@ const styles = StyleSheet.create({
     paddingTop: 30
   },
 
-  mapContainer:{
+  mapContainer: {
     width: 250,
     height: 250,
     backgroundColor: '#fff',
