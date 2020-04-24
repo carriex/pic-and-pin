@@ -9,7 +9,8 @@ import {
   Share,
   StyleSheet,
   ScrollView,
-  View
+  View,
+  Linking
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
@@ -19,6 +20,12 @@ import { Container, Text, Button, Header, Left, Body, Right, Icon, Title, Conten
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import SimpleMap from './simpleMap'
+
+import { captureRef } from 'react-native-view-shot';
+import { takeSnapshotAsync } from 'expo';
+import * as MediaLibrary from 'expo-media-library';
+
+
 // import Axios from 'axios';
 // import { Map, GoogleApiWrapper } from 'google-maps-react';
 // import Environment from './config/environment';
@@ -51,7 +58,8 @@ export default class App extends React.Component {
   state = {
     image: null,
     uploading: false,
-    googleResponse: null
+    googleResponse: null,
+    screenshot: null
   };
 
 
@@ -211,9 +219,18 @@ export default class App extends React.Component {
 
 
 {googleResponse && 
-          (<Button rounded info  style={{ textAlign:"center" }}>
-          <Text>Share to Instagram</Text>
-        </Button>)}
+          (<Button rounded info onPress={this._saveToCameraRollAsync} style={{ textAlign:"center" }}>
+          <Text>Take a snapshot</Text>
+          </Button>
+        )}
+
+{googleResponse && 
+          (<Button rounded info onPress={this._shareToIns} style={{ textAlign:"center" }}>
+          <Text>Share snapshot to Ins</Text>
+          </Button>
+        )}
+
+
 
         
       </View>
@@ -224,6 +241,30 @@ export default class App extends React.Component {
 
   _renderItem = item => {
     <Text>response: {JSON.stringify(item)}</Text>;
+  };
+
+  _saveToCameraRollAsync = async () => {
+    try {
+      const testResult = await captureRef(this._container, {
+        format: "jpg",
+        quality: 0.8
+      });
+      console.log("testResult", testResult);
+      //const saveresult = CameraRoll.saveToCameraRoll(testResult, 'photo');
+      const saveResult = await MediaLibrary.createAssetAsync(testResult); // screenshot saved in album
+      console.log("saveResult", saveResult); // object uri?
+      this.setState({screenshot: saveResult});
+    } catch (e) {
+      console.log(e);
+    }
+  }; 
+
+  _shareToIns = async () => {
+    //let image = await ImagePicker.launchImageLibraryAsync();
+    //let { origURL } = image;
+    let encodedURL = encodeURIComponent(this.state.screen);
+    let instagramURL = `instagram://library?AssetPath=${encodedURL}`;
+    Linking.openURL(instagramURL);
   };
 
   _share = () => {
