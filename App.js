@@ -86,7 +86,10 @@ export default class App extends React.Component {
   render() {
     let { image } = this.state;
     return (
-      <View style={styles.container}>
+      <View style={styles.container} 
+        ref={view => {
+          this._container = view;
+        }}>
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
