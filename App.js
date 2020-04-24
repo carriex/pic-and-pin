@@ -10,7 +10,8 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  Linking
+  Linking,
+  Dimensions
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
@@ -20,16 +21,12 @@ import { Container, Text, Button, Header, Left, Body, Right, Icon, Title } from 
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import SimpleMap from './simpleMap'
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
 import { captureRef } from 'react-native-view-shot';
 import { takeSnapshotAsync } from 'expo';
 import * as MediaLibrary from 'expo-media-library';
 
-
-// import Axios from 'axios';
-// import { Map, GoogleApiWrapper } from 'google-maps-react';
-// import Environment from './config/environment';
-// import firebase from './config/firebase';
 import Axios from 'axios';
 
 const Environment = {
@@ -40,7 +37,7 @@ const Environment = {
   FIREBASE_STORAGE_BUCKET: 'pic-and-pin.appspot.com',
   FIREBASE_MESSAGING_SENDER_ID: '240232545232',
   GOOGLE_CLOUD_VISION_API_KEY: 'AIzaSyA1Ek0Sj0m3llWAGQCI6bAmOL4x8FO64e4',
-  PRICELINE_SERVER: "https://api-sandbox.rezserver.com/api/hotel/getExpress.Results",
+  PRICELINE_SERVER: "https://api-sandbox.rezserver.com/api/hotel",
   PRICELINE_REFID: '1346',
   PRICELINE_APIKEY: '21e1fb57679db2489ba1c9f8c2c79e8c',
   PRICELINE_HOTEL_PREFIX: "https://www.priceline.com/relax/at/"
@@ -86,6 +83,7 @@ export default class App extends React.Component {
 
   render() {
     let { image } = this.state;
+    const scrollEnabled = true;
     return (
       <View style={styles.container} 
         ref={view => {
@@ -94,6 +92,7 @@ export default class App extends React.Component {
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
+          scrollEnabled = {scrollEnabled}
         >
             <Header>
               <Left>
@@ -102,9 +101,9 @@ export default class App extends React.Component {
                 <Title style={{ textAlign: "center" }}>Pic and Pin</Title>
               </Body>
               <Right>
-                <Button transparent>
+                {/* <Button transparent>
                   <Icon name='menu' />
-                </Button>
+                </Button> */}
               </Right>
             </Header>
 
@@ -166,7 +165,11 @@ export default class App extends React.Component {
     //   <Text> <Icon name='home'/>{item.name}</Text>}
     //   keyExtractor={item => item.id}
     // />
+    <View>
     <Hotel hotels={this.state.hotels}/>
+    <Container>
+    <Text>pic and pin 📍</Text></Container>
+    </View>
     )
   }
 
@@ -206,14 +209,21 @@ export default class App extends React.Component {
         </Button>
 
 
-        {googleResponse &&
-          (<SimpleMap center={{
-            lat: this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['latitude'],
-            lng: this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['longitude']
-          }}
-            description={this.state.googleResponse.responses[0].landmarkAnnotations[0].description}
-          />)} 
+          {googleResponse && (
+            <MapView provider = { PROVIDER_GOOGLE }
+            style = { styles.mapContainer }
+            initialRegion={{
+              latitude:this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['latitude'],
+              longitude: this.state.googleResponse.responses[0].landmarkAnnotations[0].locations[0].latLng['longitude'],
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}/>
+          )}
 
+          {googleResponse &&
+          (<Text>
+            {this.state.googleResponse.responses[0].landmarkAnnotations[0].description}
+          </Text>)} 
 
         {googleResponse && 
           (<Button rounded info onPress={this._saveToCameraRollAsync} style={{ textAlign:"center" }}>
@@ -258,8 +268,8 @@ export default class App extends React.Component {
   }; 
 
   _shareToIns = async () => {
-    //let image = await ImagePicker.launchImageLibraryAsync();
-    //let { origURL } = image;
+    // let image = await ImagePicker.launchImageLibraryAsync();
+    // let { origURL } = image;
     let encodedURL = encodeURIComponent(this.state.screenshot);
     let instagramURL = `instagram://library?AssetPath=${encodedURL}`;
     Linking.openURL(instagramURL);
@@ -349,19 +359,13 @@ export default class App extends React.Component {
     // get hotel info with the lag and long
     console.log('Fetching hotel info...')
     var priceline_response = await getHotelInfoAsync(responseJson);
-
-    console.log(priceline_response);
+;
     this.setState({
       hotels: priceline_response['getHotelExpress.Results']['results']['hotel_data']
 
     });}catch(error){
       console.log(error);
     }
-
-  };
-
-  shareToInstagram = async () => {
-    //function to share picture to instagram 
 
   };
 
@@ -431,7 +435,8 @@ function convert_date(date){
   console.log(checkin, checkout);
   console.log(lag, lon);
 
-  var url = new URL(Environment['PRICELINE_SERVER']),
+  var server_url = new URL(Environment['PRICELINE_SERVER']),
+  url = new URL('getExpress.Results', server_url),
   // to by pass cors error: https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors/43268098
   proxyUrl = 'https://cors-anywhere.herokuapp.com/', 
   params = {
@@ -448,8 +453,9 @@ function convert_date(date){
 
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
+  console.log(url);
 
-  let res = await fetch(proxyUrl + url);
+  let res = await fetch(url);
 
   return await res.json();
 }
@@ -463,8 +469,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingBottom: 10
+    paddingBottom: 10,
   },
+
   developmentModeText: {
     marginBottom: 20,
     color: 'rgba(0,0,0,0.4)',
@@ -474,6 +481,13 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 30
+  },
+
+  mapContainer:{
+    width: 250,
+    height: 250,
+    backgroundColor: '#fff',
+    paddingBottom: 10,
   },
 
   getStartedContainer: {
