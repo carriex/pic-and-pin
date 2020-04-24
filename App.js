@@ -79,7 +79,6 @@ export default class App extends React.Component {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
         >
-          <Container>
             <Header>
               <Left>
               </Left>
@@ -92,8 +91,6 @@ export default class App extends React.Component {
                 </Button>
               </Right>
             </Header>
-
-          </Container>
 
           <View style={styles.helpContainer}>
             <Button rounded info onPress={this._pickImage}>
@@ -149,8 +146,8 @@ export default class App extends React.Component {
     return(
       <FlatList
       data={this.state.hotels}
-      renderItem={({ item }) => <Container> 
-      <Text> <Icon name='home'/>{item.name}</Text></Container>}
+      renderItem={({ item }) => 
+      <Text> <Icon name='home'/>{item.name}</Text>}
       keyExtractor={item => item.id}
     />
     )
@@ -166,10 +163,10 @@ export default class App extends React.Component {
     return (
       <View
         style={{
-          marginTop: 20,
-          width: 250,
+          //marginTop: 20,
+          //width: 250,
           borderRadius: 3,
-          elevation: 2
+          //elevation: 2
         }}
       >
 
@@ -186,12 +183,6 @@ export default class App extends React.Component {
         >
           <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
         </View>
-
-        <Text
-          onPress={this._copyToClipboard}
-          onLongPress={this._share}
-          style={{ paddingVertical: 10, paddingHorizontal: 10 }}
-        />
 
         <Button rounded info onPress={this.submitToGoogle} style={{ textAlign: "center" }}>
           <Text>Locate!</Text>
