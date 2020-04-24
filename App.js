@@ -20,14 +20,12 @@ import * as firebase from 'firebase';
 import { Container, Text, Button, Header, Left, Body, Right, Icon, Title } from 'native-base';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import SimpleMap from './simpleMap'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
 import { captureRef } from 'react-native-view-shot';
 import { takeSnapshotAsync } from 'expo';
 import * as MediaLibrary from 'expo-media-library';
 
-import Axios from 'axios';
 
 const Environment = {
   FIREBASE_API_KEY: 'AIzaSyAmmtXzyytzo_5YuV1NVRvOx2QsHr2lpvo',

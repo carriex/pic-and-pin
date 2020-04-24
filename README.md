@@ -15,6 +15,9 @@ npm install --save google-map-react
 expo install expo-image-picker
 expo install expo-constants
 expo install expo-permissions
+npm install react-native-maps --save-exact
+expo install expo-media-library
+expo install react-native-view-shot
 ```
 
 ## Native Base
