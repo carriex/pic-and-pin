@@ -255,7 +255,7 @@ export default class App extends React.Component {
   _shareToIns = async () => {
     //let image = await ImagePicker.launchImageLibraryAsync();
     //let { origURL } = image;
-    let encodedURL = encodeURIComponent(this.state.screen);
+    let encodedURL = encodeURIComponent(this.state.screenshot);
     let instagramURL = `instagram://library?AssetPath=${encodedURL}`;
     Linking.openURL(instagramURL);
   };
