@@ -32,8 +32,8 @@ export default class HomeScreen extends Component {
                         <TouchableOpacity key={hotel.id} onPress={() => Linking.openURL(Environment['PRICELINE_HOTEL_PREFIX'] + hotel.id_t.toString())}>
                         <ListItem
                         leftAvatar = {<Avatar large source={{uri: 'https:'+ hotel.thumbnail}} rounded height={80} width={80}/>}
-                        rightTitle = {`haha`}
-                        rightTitleStyle = {{width:40,marginTop:50}}
+                        rightTitle = {`$ ${hotel.room_data[0].rate_data[0].price_details.night_price_data[0].display_night_price}`}
+                        rightTitleStyle = {{width:80,marginTop:30}}
                         title={` ${hotel.name}`}
                         titleNumberOfLines = {2}
                         titleStyle = {styles.title_style}
