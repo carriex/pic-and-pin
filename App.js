@@ -11,7 +11,8 @@ import {
   ScrollView,
   View,
   Linking,
-  Dimensions
+  Dimensions,
+  SafeAreaView
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
@@ -26,6 +27,8 @@ import { captureRef } from 'react-native-view-shot';
 import { takeSnapshotAsync } from 'expo';
 import * as MediaLibrary from 'expo-media-library';
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const Environment = {
   FIREBASE_API_KEY: 'AIzaSyAmmtXzyytzo_5YuV1NVRvOx2QsHr2lpvo',
@@ -39,7 +42,6 @@ const Environment = {
   PRICELINE_REFID: '1346',
   PRICELINE_APIKEY: '21e1fb57679db2489ba1c9f8c2c79e8c',
   PRICELINE_HOTEL_PREFIX: "https://www.priceline.com/relax/at/"
-
 };
 
 if (!firebase.apps.length) {
@@ -55,7 +57,7 @@ if (!firebase.apps.length) {
   });
 }
 
-
+const Stack = createStackNavigator();
 
 export default class App extends React.Component {
   state = {
@@ -64,8 +66,6 @@ export default class App extends React.Component {
     googleResponse: null,
     screenshot: null
   };
-  
-
 
   async componentDidMount() {
     document.title = "Pic and Pin";
@@ -84,48 +84,49 @@ export default class App extends React.Component {
     const scrollEnabled = true;
     return (
       <View style={styles.container} 
-        ref={view => {
-          this._container = view;
-        }}>
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}
-          scrollEnabled = {scrollEnabled}
-        >
-            <Header>
-              <Left>
-              </Left>
-              <Body>
-                <Title style={{ textAlign: "center" }}>Pic and Pin</Title>
-              </Body>
-              <Right>
-                {/* <Button transparent>
-                  <Icon name='menu' />
-                </Button> */}
-              </Right>
-            </Header>
-
-          <View style={styles.helpContainer}>
-            <Button rounded info onPress={this._pickImage}>
-              <Text> Pick an image from camera roll </Text>
-            </Button>
-
-            {this.state.googleResponse && (
-              <FlatList
-                data={this.state.googleResponse.responses[0].labelAnnotations}
-                extraData={this.state}
-                keyExtractor={this._keyExtractor}
-                renderItem={({ item }) => <Text style={styles.getStartedText}>Item: {item.description}</Text>}
-              />
-            )}
-            {this._maybeRenderImage()}
-            {this._maybeRenderUploadingOverlay()}
-          </View>
-        </ScrollView>
-      </View>
+      ref={view => {
+        this._container = view;
+      }}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        scrollEnabled = {scrollEnabled}>
+          <Header>
+            <Left>
+            </Left>
+            <Body>
+              <Title style={{ textAlign: "center" }}>Pic and Pin</Title>
+            </Body>
+            <Right>
+              {/* <Button transparent>
+                <Icon name='menu' />
+              </Button> */}
+            </Right>
+          </Header>
+  
+        <View style={styles.helpContainer}>
+          <Button rounded info onPress={this._pickImage}
+            style = {styles.pickbutton}
+          >
+            <Text style = {styles.buttontext}> Select image from camera roll </Text>
+          </Button>
+              
+          {/* {this.state.googleResponse && (
+            <FlatList
+              data={this.state.googleResponse.responses[0].labelAnnotations}
+              extraData={this.state}
+              keyExtractor={this._keyExtractor}
+              renderItem={({ item }) => <Text style={styles.getStartedText}>Item: {item.description}</Text>}
+            />
+          )} */}
+          {this._maybeRenderImage()}
+          {this._maybeRenderUploadingOverlay()}
+        </View>
+      </ScrollView>
+    </View>
     );
   }
-
+  
   organize = array => {
     return array.map(function (item, i) {
       return (
@@ -176,37 +177,24 @@ export default class App extends React.Component {
     if (!image) {
       return;
     }
-  
 
     return (
-      <View
-        style={{
-          //marginTop: 20,
-          //width: 250,
-          borderRadius: 3,
-          //elevation: 2
-        }}
-      >
-
+      <SafeAreaView>
         <View
           style={{
-            borderTopRightRadius: 3,
-            borderTopLeftRadius: 3,
-            shadowColor: 'rgba(0,0,0,1)',
-            shadowOpacity: 0.2,
-            shadowOffset: { width: 4, height: 4 },
-            shadowRadius: 5,
-            overflow: 'hidden'
+            justifyContent:'center',
+            alignContent:'center',
+            alignItems: 'center',
           }}
         >
-          <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
+          <Image source={{ uri: image }} style={styles.imageStyle} />
+          <Button rounded info onPress={this.submitToGoogle} style={{textAlign: "center",width:200}}>
+            <Text style = {styles.buttontext}>Locate</Text>
+          </Button>
         </View>
 
-        <Button rounded info onPress={this.submitToGoogle} style={{ textAlign: "center" }}>
-          <Text>Locate!</Text>
-        </Button>
 
-
+          { <View>
           {googleResponse && (
             <MapView provider = { PROVIDER_GOOGLE }
             style = { styles.mapContainer }
@@ -217,21 +205,26 @@ export default class App extends React.Component {
               longitudeDelta: 0.0421,
             }}/>
           )}
+          </View> }
 
           {googleResponse &&
-          (<Text>
+          (<Text style = {{    
+            textAlign: "center",
+            fontSize:20,
+            marginTop:20,
+            marginBottom:20,
+            fontWeight:'600'}}>
             {this.state.googleResponse.responses[0].landmarkAnnotations[0].description}
           </Text>)} 
 
-        {googleResponse && 
-          (<Button rounded info onPress={this._shareToIns} style={{ textAlign:"center" }}>
-          <Text>Share to Instagram</Text>
+        {/* {googleResponse && 
+          (<Button rounded info onPress={this._shareToIns} style={{ textAlign:"center",width:300,marginLeft:35 }}>
+          <Text style = {styles.buttontext}>Share to Instagram</Text>
           </Button>
-        )}
+        )} */}
 
-        {hotels && this._maybeRenderHotel()}
-
-      </View>
+        {hotels && this._maybeRenderHotel()}     
+      </SafeAreaView>
     );
   };
 
@@ -377,12 +370,17 @@ export default class App extends React.Component {
 *****************************/
 
 function Hotel(props){
+  console.log(props.hotels);
   const content = props.hotels.map((hotel) =>
-  <Text key={hotel.id} onPress={() => Linking.openURL(Environment['PRICELINE_HOTEL_PREFIX'] + hotel.id_t.toString())}>
+
+  <Text style = {styles.hotelText} key={hotel.id} onPress={() => Linking.openURL(Environment['PRICELINE_HOTEL_PREFIX'] + hotel.id_t.toString())}>
     {hotel.name}
   </Text>)
   return(
-    <View>{content}</View>
+    <View>
+      <Text style = {{textAlign: "center",fontSize:20,marginTop:20,marginBottom:20,fontWeight:'600'}}>Hotels nearby</Text>
+      {content}
+    </View>
   );
 }
 
@@ -485,10 +483,12 @@ const styles = StyleSheet.create({
   },
 
   mapContainer:{
-    width: 250,
+    width: 400,
     height: 250,
     backgroundColor: '#fff',
     paddingBottom: 10,
+    marginBottom:20,
+    marginTop:20
   },
 
   getStartedContainer: {
@@ -507,5 +507,32 @@ const styles = StyleSheet.create({
     marginTop: 50,
     alignItems: 'center',
     //color: '#007aff'
+  },
+  pickbutton:{
+    width:300
+  },
+  buttontext:{
+    textAlign:"center",
+    flex:1,
+    fontSize:18,
+    fontWeight:"500"
+  },
+  imageStyle:{
+     width: 250,
+     height: 250,
+     marginTop:25,
+     marginBottom:25,
+     borderRadius:20,
+    //  borderTopRightRadius: 3,
+    // borderTopLeftRadius: 3,
+    shadowColor: 'rgba(0,0,0,1)',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 4, height: 4 },
+    shadowRadius: 5,
+    overflow: 'hidden',
+  },
+  hotelText:{
+    lineHeight:30,
+    fontSize:16
   }
 });
