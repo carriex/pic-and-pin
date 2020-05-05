@@ -1,6 +1,6 @@
 //https://blog.jscrambler.com/create-a-react-native-image-recognition-app-with-google-vision-api/ 
 import 'react-native-get-random-values';
-import React from 'react';
+import React,{Component} from 'react';
 import {
   ActivityIndicator,
   Clipboard,
@@ -39,8 +39,7 @@ import * as MediaLibrary from 'expo-media-library';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './screens/HomeScreen';
-import Hotels from './screens/Hotels'
+
 
 const Environment = {
   FIREBASE_API_KEY: 'AIzaSyAmmtXzyytzo_5YuV1NVRvOx2QsHr2lpvo',
@@ -69,21 +68,25 @@ if (!firebase.apps.length) {
   });
 }
 
-const Stack = createStackNavigator();
 
+export default class HomeScreen extends Component {
+  constructor(props){
+      super(props);
+  }
 
-export default class App extends React.Component {
   state = {
     image: null,
     uploading: false,
     googleResponse: null,
-    screenshot: null
+    screenshot: null,
+    showPickButton:true
   };
 
   async componentDidMount() {
     document.title = "Pic and Pin";
     await Permissions.askAsync(Permissions.CAMERA_ROLL);
     await Permissions.askAsync(Permissions.CAMERA);
+    const {navigate} = this.props.navigation;
 
     await Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
@@ -96,14 +99,55 @@ export default class App extends React.Component {
     let { image } = this.state;
     const scrollEnabled = true;
     return (
-      <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false}} />
-        <Stack.Screen name="Hotels" component={Hotels} options={{ headerShown: false}}/>
-      </Stack.Navigator>
-    </NavigationContainer>
-
-    )
+    //   <NavigationContainer>
+    //   <Stack.Navigator initialRouteName="Home">
+    //     <Stack.Screen name="Home" component={HomeScreen} />
+    //     <Stack.Screen name="Details" component={DetailsScreen} />
+    //   </Stack.Navigator>
+    // </NavigationContainer>
+      <View style={styles.container} 
+      ref={view => {
+        this._container = view;
+      }}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        scrollEnabled = {scrollEnabled}>
+          <Header>
+            <Left>
+            </Left>
+            <Body>
+              <Title style={{ textAlign: "center" }}>Pic and Pin</Title>
+            </Body>
+            <Right>
+              {/* <Button transparent>
+                <Icon name='menu' />
+              </Button> */}
+            </Right>
+          </Header>
+  
+        <View style={styles.helpContainer}>
+          {this.state.showPickButton &&
+          <Button rounded info onPress={this._pickImage}
+            style = {styles.pickbutton}
+          >
+            <Text style = {styles.buttontext}> Select image from camera roll </Text>
+          </Button>}
+              
+          {/* {this.state.googleResponse && (
+            <FlatList
+              data={this.state.googleResponse.responses[0].labelAnnotations}
+              extraData={this.state}
+              keyExtractor={this._keyExtractor}
+              renderItem={({ item }) => <Text style={styles.getStartedText}>Item: {item.description}</Text>}
+            />
+          )} */}
+          {this._maybeRenderImage()}
+          {this._maybeRenderUploadingOverlay()}
+        </View>
+      </ScrollView>
+    </View>
+    );
   }
   
   organize = array => {
@@ -136,11 +180,13 @@ export default class App extends React.Component {
   };
 
   _maybeRenderHotel = () => {
+    console.log("Here ???")
+    console.log(this.props.navigation)
     return (
       <View>
-        <Hotel hotels={this.state.hotels} />
+        <Hotel hotels={this.state.hotels} navigation={this.props.navigation} />
         <Container>
-          <Text>pic and pin 📍</Text></Container>
+        <Text style={{color:'white'}}>pic and pin</Text></Container>
       </View>
     )
   }
@@ -190,11 +236,11 @@ export default class App extends React.Component {
             {this.state.googleResponse.responses[0].landmarkAnnotations[0].description}
           </Text>)}
 
-        {/* {googleResponse && 
-          (<Button rounded info onPress={this._shareToIns} style={{ textAlign:"center",width:300,marginLeft:35 }}>
+        {googleResponse && 
+          (<Button rounded info onPress={this._shareToIns} style={{ textAlign:"center",width:195,marginLeft:5}}>
           <Text style = {styles.buttontext}>Share to Instagram</Text>
           </Button>
-        )} */}
+        )}
 
         {hotels && this._maybeRenderHotel()}     
       </SafeAreaView>
@@ -263,6 +309,7 @@ export default class App extends React.Component {
       aspect: [4, 3]
     });
 
+    this.setState({showPickButton: false});
     this._handleImagePicked(pickerResult);
   };
 
@@ -344,7 +391,7 @@ export default class App extends React.Component {
 *****************************/
 
 function Hotel(props){
-  console.log(props.hotels);
+//   const {navigate} = this.props.navigation;
   const content = props.hotels.map((hotel) =>
 
   <Text style = {styles.hotelText} key={hotel.id} onPress={() => Linking.openURL(Environment['PRICELINE_HOTEL_PREFIX'] + hotel.id_t.toString())}>
@@ -352,8 +399,9 @@ function Hotel(props){
   </Text>)
   return(
     <View>
-      <Text style = {{textAlign: "center",fontSize:20,marginTop:20,marginBottom:20,fontWeight:'600'}}>Hotels nearby</Text>
-      {content}
+        <Button rounded info onPress={()=> props.navigation.navigate('Hotels',{HotelData:props.hotels})} style={{textAlign: "center",width:195,marginLeft:200,marginTop:-45}}>
+            <Text style = {styles.buttontext}>Show nearby hotels</Text>
+        </Button>
     </View>
   );
 }
@@ -424,6 +472,8 @@ async function getHotelInfoAsync(response) {
       check_in: checkin,
       check_out: checkout
     };
+    console.log("url");
+    console.log(url);
 
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
