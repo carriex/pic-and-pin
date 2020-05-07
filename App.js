@@ -42,18 +42,19 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import Hotels from './screens/Hotels'
 
+/* set up environment variables */
 const Environment = {
-  FIREBASE_API_KEY: 'AIzaSyAmmtXzyytzo_5YuV1NVRvOx2QsHr2lpvo',
-  FIREBASE_AUTH_DOMAIN: 'pic-and-pin.firebaseapp.com',
-  FIREBASE_DATABASE_URL: 'https://pic-and-pin.firebaseio.com/',
-  FIREBASE_PROJECT_ID: 'pic-and-pin',
-  FIREBASE_STORAGE_BUCKET: 'pic-and-pin.appspot.com',
-  FIREBASE_MESSAGING_SENDER_ID: '240232545232',
-  GOOGLE_CLOUD_VISION_API_KEY: 'AIzaSyA1Ek0Sj0m3llWAGQCI6bAmOL4x8FO64e4',
-  PRICELINE_SERVER: "https://api-sandbox.rezserver.com/api/hotel",
-  PRICELINE_REFID: '1346',
-  PRICELINE_APIKEY: '21e1fb57679db2489ba1c9f8c2c79e8c',
-  PRICELINE_HOTEL_PREFIX: "https://www.priceline.com/relax/at/"
+  FIREBASE_API_KEY: //,
+  FIREBASE_AUTH_DOMAIN: //,
+  FIREBASE_DATABASE_URL: //,
+  FIREBASE_PROJECT_ID: //,
+  FIREBASE_STORAGE_BUCKET: //,
+  FIREBASE_MESSAGING_SENDER_ID: //,
+  GOOGLE_CLOUD_VISION_API_KEY: //,
+  PRICELINE_SERVER: //,
+  PRICELINE_REFID: //,
+  PRICELINE_APIKEY: //,
+  PRICELINE_HOTEL_PREFIX: //,
 };
 
 if (!firebase.apps.length) {
@@ -64,8 +65,8 @@ if (!firebase.apps.length) {
     projectId: Environment['FIREBASE_PROJECT_ID'],
     storageBucket: Environment['FIREBASE_STORAGE_BUCKET'],
     messagingSenderId: Environment['FIREBASE_MESSAGING_SENDER_ID'],
-    appId: "1:240232545232:web:ae295bead95956b8bed7d5",
-    measurementId: "G-VVN9BF9ZKQ"
+    appId: // appId,
+    measurementId: // measurementId,
   });
 }
 
@@ -190,11 +191,6 @@ export default class App extends React.Component {
             {this.state.googleResponse.responses[0].landmarkAnnotations[0].description}
           </Text>)}
 
-        {/* {googleResponse && 
-          (<Button rounded info onPress={this._shareToIns} style={{ textAlign:"center",width:300,marginLeft:35 }}>
-          <Text style = {styles.buttontext}>Share to Instagram</Text>
-          </Button>
-        )} */}
 
         {hotels && this._maybeRenderHotel()}     
       </SafeAreaView>
@@ -207,22 +203,6 @@ export default class App extends React.Component {
     <Text>response: {JSON.stringify(item)}</Text>;
   };
 
-  // saveToCameraRollAsync = async () => {
-  //   try {
-  //     const testResult = await captureRef(this._container, {
-  //       format: "jpg",
-  //       quality: 0.8
-  //     });
-  //     console.log("testResult", testResult);
-  //     //const saveresult = CameraRoll.saveToCameraRoll(testResult, 'photo');
-  //     const saveResult = await MediaLibrary.createAssetAsync(testResult); // screenshot saved in album
-  //     console.log("saveResult", saveResult); // object uri?
-  //     this.setState({screenshot: saveResult});
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }; 
-
   _shareToIns = async () => {
     try {
       const testResult = await captureRef(this._container, {
@@ -230,7 +210,6 @@ export default class App extends React.Component {
         quality: 0.8
       });
       console.log("testResult", testResult);
-      //const saveresult = CameraRoll.saveToCameraRoll(testResult, 'photo');
       const saveResult = await MediaLibrary.createAssetAsync(testResult); // screenshot saved in album
       console.log("saveResult", saveResult); // object uri?
       this.setState({ screenshot: saveResult });

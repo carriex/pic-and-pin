@@ -41,7 +41,6 @@ export default class HomeScreen extends Component {
                         subtitle={`Rating: ${hotel.review_rating}`}
                         subtitleStyle = {styles.subtitle_style}
                         bottomDivider
-                        // containerStyle={{ borderBottomWidth: 0 }
                         
                         />
                         </TouchableOpacity>
@@ -99,14 +98,6 @@ const styles = StyleSheet.create({
         marginLeft:5,
         marginTop:5
       },
-    //   title_containerstyle: {
-    //     // width: '85%',
-    //     marginTop: 5,
-    //     justifyContent: 'center', 
-    //     alignItems: 'center',
-    //     backgroundColor: 'white',
-    //     marginBottom: 10
-    //     },
 
         subtitle_container: {
             marginTop: 20,
