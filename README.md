@@ -1,8 +1,6 @@
 # pic-and-pin
 
-Pic & Pin 📍a Landmark Recognition App built in partnership with [Priceline](https://www.priceline.com/) as part of Cornell Tech's BigCo Studio.
-
-[presentation](https://docs.google.com/presentation/d/1f7Tu5ge8foK5i5TMpLLPk4oG0f8JKeX6d00a60kTUKY/edit?usp=sharing)
+Pic & Pin 📍a Landmark Recognition App built in partnership with [Priceline](https://www.priceline.com/) as part of Cornell Tech's BigCo Studio. [presentation](https://docs.google.com/presentation/d/1f7Tu5ge8foK5i5TMpLLPk4oG0f8JKeX6d00a60kTUKY/edit?usp=sharing)
 
 ![Locate an image](/imgs/ui-1.jpg)
 
